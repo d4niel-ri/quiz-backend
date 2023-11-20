@@ -1,6 +1,6 @@
 const express = require('express');
 const { login, getAllUser, register, changePassword, createAdmin, 
-        deleteUser, changeProfile, getUser, forgotPassword, resetPassword } = require('../controllers/userController');
+        deleteUser, changeProfile, getUser, forgotPassword, resetPassword, verifyToken } = require('../controllers/userController');
 const { authenticate } = require('../middlewares/authenticate');
 const { authorize } = require('../middlewares/authorize');
 const { confirmation } = require('../middlewares/confirmation');
@@ -15,6 +15,7 @@ router.get("/", authenticate, authorize([1]), getAllUser);
 router.get("/:id", getUser);
 
 router.use(authenticate);
+router.post("/verify-token", verifyToken);
 router.put("/", changeProfile);
 router.put("/change-password", changePassword);
 router.post("/create-admin", authorize([1]), createAdmin);

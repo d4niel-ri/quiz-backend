@@ -7,6 +7,16 @@ const { handleServerError, handleClientError } = require("../utils/handleError")
 const { signToken, validateToken } = require("../utils/handleToken");
 const { transporter } = require("../utils/handleMail");
 
+exports.verifyToken = async (req, res) => {
+  try {
+    return res.status(200).json({ status: 'Success' });
+
+  } catch (error) {
+    console.error(error);
+    handleServerError(res);
+  }
+};
+
 exports.login = async(req, res) => {
   try {
     const dataReq = req.body;

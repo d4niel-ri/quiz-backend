@@ -40,6 +40,11 @@ module.exports = (sequelize, DataTypes) => {
     author_id: {
       type: DataTypes.INTEGER,
       allowNull: false 
+    },
+    is_published: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false
     }
   }, {
     sequelize,

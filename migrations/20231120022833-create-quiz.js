@@ -17,6 +17,10 @@ module.exports = {
         allowNull: false,
         type: Sequelize.TEXT
       },
+      is_published: {
+        allowNull: false,
+        type: Sequelize.BOOLEAN,
+      },
       author_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
