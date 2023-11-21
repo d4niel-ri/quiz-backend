@@ -183,6 +183,21 @@ exports.getUser = async(req, res) => {
   }
 }
 
+exports.getMyUserData = async(req, res) => {
+  try {
+    console.log(req.user);
+    const foundUser = await User.findByPk(req.user.id, 
+      {attributes: ['id', 'username', 'email', 'role'] }
+    );
+
+    return res.status(200).json({ data: foundUser, status: 'Success' });
+
+  } catch (error) {
+    console.error(error);
+    handleServerError(res);
+  }
+}
+
 exports.changeProfile = async(req, res) => {
   try {
     const dataReq = req.body;

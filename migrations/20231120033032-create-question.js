@@ -3,9 +3,14 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('Questions', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       quiz_id: {
         allowNull: false,
-        primaryKey: true,
         type: Sequelize.INTEGER,
         references: {
           // This is a reference to another model
@@ -18,7 +23,6 @@ module.exports = {
       },
       question_no: {
         allowNull: false,
-        primaryKey: true,
         type: Sequelize.INTEGER
       },
       question_text: {

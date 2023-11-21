@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const { Op } = require("sequelize");
 
-const { Quiz, User } = require("../models");
+const { Quiz, User, Question, sequelize } = require("../models");
 const { handleServerError, handleClientError } = require("../utils/handleError");
 
 exports.getQuiz = async(req, res) => {
@@ -11,7 +11,8 @@ exports.getQuiz = async(req, res) => {
       let foundQuiz;
       if (req.user.role === 1) {
         foundQuiz = await Quiz.findByPk(id, {include: [
-          { model: User, attributes: ["id", "username", "email"] }
+          { model: User, attributes: ["id", "username", "email"] },
+          { model: Question, attributes: ['quiz_id'] }
         ]});
 
       } else {
@@ -20,30 +21,47 @@ exports.getQuiz = async(req, res) => {
             id,
             [Op.or] : { author_id: req.user.id, is_published: true }
           },
-          include: [{ model: User, attributes: ["id", "username", "email"] }]
+          include: [
+            { model: User, attributes: ["id", "username", "email"] },
+            { model: Question, attributes: ['quiz_id'] }
+          ]
         });
       }
 
       if (!foundQuiz) return handleClientError(res, 404, "Quiz Not Found");
-      return res.status(200).json({ data: foundQuiz, status: 'Success' });
+      const quizObject = foundQuiz.toJSON();
+      quizObject.questionCount = foundQuiz.Questions.length;
+      delete quizObject.Questions;
+
+      return res.status(200).json({ data: quizObject, status: 'Success' });
       
     } else {
       let response;
       if (req.user.role === 1) {
-        response = await Quiz.findAll({include: [
-          { model: User, attributes: ["id", "username", "email"] },
-        ]});
+        response = await Quiz.findAll({
+          include: [
+            { model: User, attributes: ["id", "username", "email"] },
+            { model: Question, attributes: ['quiz_id'] }
+          ]
+        });
       
       } else {
         response = await Quiz.findAll({
-          where: {
-            [Op.or] : { author_id: req.user.id, is_published: true }
-          },
-          include: [{ model: User, attributes: ["id", "username", "email"] }]
+          where: { is_published: true },
+          include: [
+            { model: User, attributes: ["id", "username", "email"] },
+            { model: Question, attributes: ['quiz_id'] }
+          ]
         })
       }
   
-      return res.status(200).json({ data: response, status: 'Success' });
+      const quizzesWithQuestionCounts = response.map((quiz) => {
+        const quizObject = quiz.toJSON();
+        quizObject.questionCount = quizObject.Questions.length; // Include the count
+        delete quizObject.Questions; // Exclude the detailed questions
+        return quizObject;
+      });
+      return res.status(200).json({ data: quizzesWithQuestionCounts, status: 'Success' });
     }
   } catch (error) {
     console.error(error);
