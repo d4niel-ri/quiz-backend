@@ -27,6 +27,9 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER
       },
+      imageUrl: {
+        type: Sequelize.STRING,
+      },
       reset_token: {
         type: Sequelize.STRING
       },

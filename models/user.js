@@ -48,6 +48,9 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: 2,
       allowNull: false
     },
+    imageUrl: {
+      type: DataTypes.STRING,
+    },
     reset_token: DataTypes.STRING
   }, {
     sequelize,

@@ -1,5 +1,7 @@
 const Joi = require("joi");
 const { Op } = require("sequelize");
+const fs = require('fs');
+const path = require('path');
 
 const { User } = require("../models");
 const { checkPassword } = require("../utils/handlePassword");
@@ -187,7 +189,7 @@ exports.getMyUserData = async(req, res) => {
   try {
     console.log(req.user);
     const foundUser = await User.findByPk(req.user.id, 
-      {attributes: ['id', 'username', 'email', 'role'] }
+      {attributes: ['id', 'username', 'email', 'role', 'imageUrl'] }
     );
 
     return res.status(200).json({ data: foundUser, status: 'Success' });
@@ -201,6 +203,7 @@ exports.getMyUserData = async(req, res) => {
 exports.changeProfile = async(req, res) => {
   try {
     const dataReq = req.body;
+    const newImage = req.file;
     const scheme = Joi.object({
       username: Joi.string(),
       email: Joi.string().email(),
@@ -210,19 +213,34 @@ exports.changeProfile = async(req, res) => {
     if (error) 
       return res.status(400).json({ status: 'Validation Failed', message: error.details[0].message })
 
-    const foundUser = await User.findByPk(req.user.id, {attributes: ['id', 'username', 'email'] });
+    const foundUser = await User.findByPk(req.user.id, {attributes: ['id', 'username', 'email', 'role', 'imageUrl'] });
+
     if (dataReq.username) {
-      const existUserWithSameUsername = await User.findOne({ where: {username: dataReq.username} });
+      const existUserWithSameUsername = await User.findOne({ where: 
+        {username: dataReq.username, id: { [Op.ne]: foundUser.id }} 
+      });
       if (existUserWithSameUsername) return handleClientError(res, 400, "Username already exist");
 
       foundUser.username = dataReq.username;
     }
 
     if (dataReq.email) {
-      const existUserWithSameEmail = await User.findOne({ where: {email: dataReq.email} });
+      const existUserWithSameEmail = await User.findOne({ where: 
+        {email: dataReq.email, id: { [Op.ne]: foundUser.id }}
+      });
     if (existUserWithSameEmail) return handleClientError(res, 400, "Email already exist");
 
       foundUser.email = dataReq.email;
+    }
+
+    // Delete the old image if a new image is provided
+    if (newImage) {
+      if (foundUser.imageUrl) {
+        // Assuming you have access to the file system
+        const imagePath = path.join(__dirname, '..', foundUser.imageUrl);
+        fs.unlinkSync(imagePath);
+      }
+      foundUser.imageUrl = `/uploads/${newImage.filename}`;
     }
 
     await foundUser.save();
