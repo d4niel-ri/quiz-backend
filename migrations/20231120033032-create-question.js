@@ -12,6 +12,12 @@ module.exports = {
       quiz_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
+        references: {
+          model: 'Quizzes',
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       question_no: {
         allowNull: false,
