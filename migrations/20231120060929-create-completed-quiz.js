@@ -3,30 +3,19 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('CompletedQuizzes', {
+      id: {
+        allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
+        type: Sequelize.INTEGER
+      },
       user_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        primaryKey: true,
-        references: {
-          model: 'Users',
-          key: 'id',
-          onDelete: 'CASCADE', // TODO: Debug this
-        }
       },
       quiz_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        primaryKey: true,
-        references: {
-          model: 'Quizzes',
-          key: 'id',
-          onDelete: 'CASCADE', // TODO: Debug this
-        }
-      },
-      completion_no: {
-        allowNull: false,
-        type: Sequelize.INTEGER,
-        primaryKey: true,
       },
       score: {
         type: Sequelize.FLOAT

@@ -7,7 +7,6 @@ module.exports = {
       {
         user_id: 4,
         quiz_id: 1,
-        completion_no: 1,
         score: 80,
         completion_date: new Date(),
         createdAt: new Date(),
@@ -16,7 +15,6 @@ module.exports = {
       {
         user_id: 4,
         quiz_id: 1,
-        completion_no: 2,
         score: 85,
         completion_date: new Date(),
         createdAt: new Date(),
@@ -25,7 +23,6 @@ module.exports = {
       {
         user_id: 2,
         quiz_id: 1,
-        completion_no: 1,
         score: 75,
         completion_date: new Date(),
         createdAt: new Date(),
@@ -34,7 +31,6 @@ module.exports = {
       {
         user_id: 2,
         quiz_id: 3,
-        completion_no: 1,
         score: 90,
         completion_date: new Date(),
         createdAt: new Date(),
@@ -43,7 +39,6 @@ module.exports = {
       {
         user_id: 3,
         quiz_id: 2,
-        completion_no: 1,
         score: 92,
         completion_date: new Date(),
         createdAt: new Date(),
@@ -52,7 +47,6 @@ module.exports = {
       {
         user_id: 3,
         quiz_id: 3,
-        completion_no: 1,
         score: 88,
         completion_date: new Date(),
         createdAt: new Date(),
@@ -61,7 +55,6 @@ module.exports = {
       {
         user_id: 3,
         quiz_id: 3,
-        completion_no: 2,
         score: 100,
         completion_date: new Date(),
         createdAt: new Date(),

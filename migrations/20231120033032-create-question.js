@@ -12,14 +12,6 @@ module.exports = {
       quiz_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        references: {
-          // This is a reference to another model
-          model: 'Quizzes',
-    
-          // This is the column name of the referenced model
-          key: 'id',
-          onDelete: 'CASCADE', // TODO: Debug this
-        }
       },
       question_no: {
         allowNull: false,

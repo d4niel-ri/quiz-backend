@@ -24,13 +24,6 @@ module.exports = {
       author_id: {
         allowNull: false,
         type: Sequelize.INTEGER,
-        references: {
-          // This is a reference to another model
-          model: 'Users',
-    
-          // This is the column name of the referenced model
-          key: 'id',
-        }
       },
       createdAt: {
         allowNull: false,

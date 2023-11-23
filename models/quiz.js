@@ -14,17 +14,19 @@ module.exports = (sequelize, DataTypes) => {
       Quiz.belongsTo(models.User, {
         foreignKey: {
           name: "author_id"
-        }
+        },
       });
       Quiz.hasMany(models.Question, {
         foreignKey: {
           name: "quiz_id"
-        }
+        },
+        onDelete: 'CASCADE',
       });
       Quiz.hasMany(models.CompletedQuiz, {
         foreignKey: {
           name: 'quiz_id'
-        }
+        },
+        onDelete: 'CASCADE',
       })
     }
   }

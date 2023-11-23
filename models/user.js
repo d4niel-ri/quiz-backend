@@ -16,12 +16,14 @@ module.exports = (sequelize, DataTypes) => {
       User.hasMany(models.Quiz, {
         foreignKey: {
           name: 'author_id'
-        }
+        },
+        onDelete: 'CASCADE',
       });
       User.hasMany(models.CompletedQuiz, {
         foreignKey: {
           name: 'user_id'
-        }
+        },
+        onDelete: 'CASCADE',
       })
     }
   }

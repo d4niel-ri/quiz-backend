@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const { Op } = require("sequelize");
 
-const { Quiz, User, Question, sequelize } = require("../models");
+const { Quiz, User, Question, CompletedQuiz, sequelize } = require("../models");
 const { handleServerError, handleClientError } = require("../utils/handleError");
 
 exports.getQuiz = async(req, res) => {
@@ -69,14 +69,73 @@ exports.getQuiz = async(req, res) => {
   }
 }
 
+exports.getMyCompletedQuizzes = async(req, res) => {
+  try {
+    const completedQuizzes = await CompletedQuiz.findAll({
+      where: { user_id: req.user.id },
+      include: [
+        {
+          model: Quiz,
+          include: [
+            { model: User, attributes: ["id", "username", "email"] },
+            { model: Question, attributes: ['quiz_id'] }
+          ],
+        }
+      ],
+      order: [['id', 'DESC']],
+    });
+
+    // Process the data if needed
+    const uniqueQuizIds = new Set();
+    const formattedCompletedQuizzes = completedQuizzes
+      .filter((completedQuiz) => {
+        // Filter out duplicates based on quiz_id
+        const quizId = completedQuiz.quiz_id;
+        if (!uniqueQuizIds.has(quizId)) {
+          uniqueQuizIds.add(quizId);
+          return true;
+        }
+        return false;
+      })
+      .map((completedQuiz) => {
+        const quizData = completedQuiz.Quiz.toJSON();
+        quizData.questionCount = quizData.Questions.length;
+        delete quizData.Questions;
+        
+        const completedQuizData = completedQuiz.toJSON();
+        quizData.score = completedQuizData.score;
+        quizData.completion_date = completedQuizData.completion_date;
+
+        return quizData;
+      });
+
+    return res.status(200).json({ data: formattedCompletedQuizzes, status: 'Success' });
+
+  } catch (error) {
+    console.error(error);
+    handleServerError(res);
+  }
+}
+
 exports.getMyCreatedQuizzes = async(req, res) => {
   try {
-    const response = await Quiz.findAll({
+    const createdQuizzes = await Quiz.findAll({
       where: { author_id: req.user.id },
-      include: [{ model: User, attributes: ["id", "username", "email"] }]
+      include: [
+        { model: User, attributes: ["id", "username", "email"] },
+        { model: Question, attributes: ['quiz_id'] }
+      ]
     });
+
+    const formattedCreatedQuizzes = createdQuizzes
+      .map((createQuiz) => {
+        const quizData = createQuiz.toJSON();
+        quizData.questionCount = quizData.Questions.length;
+        delete quizData.Questions;
+        return quizData;
+      })
     
-    return res.status(200).json({ data: response, status: 'Success' });
+    return res.status(200).json({ data: formattedCreatedQuizzes, status: 'Success' });
 
   } catch (error) {
     console.error(error);
