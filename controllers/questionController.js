@@ -1,7 +1,7 @@
 const Joi = require("joi");
 const { Op } = require("sequelize");
 
-const { Quiz, Question, User } = require("../models");
+const { Quiz, Question, User, sequelize } = require("../models");
 const { handleServerError, handleClientError } = require("../utils/handleError");
 
 exports.getQuestions = async (req, res) => {
@@ -118,8 +118,32 @@ exports.deleteQuestion = async (req, res) => {
     if (req.user.role !== 1 && foundQuestion.Quiz.author_id !== req.user.id)
       return handleClientError(res, 400, "Not Authorized");
 
-    await Question.destroy({where: {id: question_id}});
-    res.status(200).json({ message: 'Success delete the question', status: 'Success' });
+    await sequelize.transaction(async(t) => {
+      // Step 1: Delete the target question
+      await Question.destroy({where: {id: question_id}, transaction: t});
+
+      // Step 2: Find questions with question_no greater than the deleted question's question_no
+      const questionsToUpdate = await Question.findAll({
+        where: {
+          quiz_id: foundQuestion.quiz_id,
+          question_no: { [Op.gt]: foundQuestion.question_no },
+        },
+        transaction: t
+      });
+
+      for (const questionToUpdate of questionsToUpdate) {
+        questionToUpdate.question_no -= 1;
+        await questionToUpdate.save({transaction: t});
+      }
+
+      const foundQuiz = await Quiz.findByPk(foundQuestion.quiz_id, {
+        include: [{model: Question}],
+        transaction: t
+      });
+
+      const questions = foundQuiz.Questions;
+      return res.status(200).json({ data: questions, status: "Success" });
+    })
 
   } catch (error) {
     console.error(error);
