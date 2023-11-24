@@ -8,25 +8,11 @@ exports.getQuiz = async(req, res) => {
   try {
     const { id } = req.query;
     if (id) {
-      let foundQuiz;
-      if (req.user.role === 1) {
-        foundQuiz = await Quiz.findByPk(id, {include: [
-          { model: User, attributes: ["id", "username", "email"] },
-          { model: Question, attributes: ['quiz_id'] }
-        ]});
+      const foundQuiz = await Quiz.findByPk(id, {include: [
+        { model: User, attributes: ["id", "username", "email"] },
+        { model: Question, attributes: ['quiz_id'] }
+      ]});
 
-      } else {
-        foundQuiz = await Quiz.findOne({
-          where: {
-            id,
-            [Op.or] : { author_id: req.user.id, is_published: true }
-          },
-          include: [
-            { model: User, attributes: ["id", "username", "email"] },
-            { model: Question, attributes: ['quiz_id'] }
-          ]
-        });
-      }
 
       if (!foundQuiz) return handleClientError(res, 404, "Quiz Not Found");
       const quizObject = foundQuiz.toJSON();
