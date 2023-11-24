@@ -1,10 +1,11 @@
 const express = require('express');
 const { authenticate } = require('../middlewares/authenticate');
-const { getQuestions, createQuestion, updateQuestion, deleteQuestion } = require('../controllers/questionController');
+const { getQuestions, createQuestion, updateQuestion, deleteQuestion, getQuestion } = require('../controllers/questionController');
 
 const router = express.Router();
 
 router.use(authenticate);
+router.get("/single", getQuestion);
 router.get("/:quiz_id", getQuestions);
 
 router.post("/:quiz_id", createQuestion);

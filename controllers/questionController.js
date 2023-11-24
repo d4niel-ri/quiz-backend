@@ -24,6 +24,25 @@ exports.getQuestions = async (req, res) => {
   }
 }
 
+exports.getQuestion = async (req, res) => {
+  try {
+    const {question_id} = req.query;
+    if (!question_id)
+      return handleClientError(res, 404, "Need query `question_id`");
+
+    const foundQuestion = await Question.findByPk(question_id);
+
+    if (!foundQuestion)
+      return handleClientError(res, 404, "Question Not Found");
+
+    return res.status(200).json({ data: foundQuestion, status: 'Success' });
+
+  } catch (error) {
+    console.error(error);
+    handleServerError(res);
+  }
+}
+
 exports.createQuestion = async (req, res) => {
   try {
     const {quiz_id} = req.params;
