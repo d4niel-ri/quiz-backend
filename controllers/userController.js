@@ -187,7 +187,6 @@ exports.getUser = async(req, res) => {
 
 exports.getMyUserData = async(req, res) => {
   try {
-    console.log(req.user);
     const foundUser = await User.findByPk(req.user.id, 
       {attributes: ['id', 'username', 'email', 'role', 'imageUrl'] }
     );

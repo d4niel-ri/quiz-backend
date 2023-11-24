@@ -28,7 +28,7 @@ exports.getQuestion = async (req, res) => {
   try {
     const {question_id} = req.query;
     if (!question_id)
-      return handleClientError(res, 404, "Need query `question_id`");
+      return handleClientError(res, 400, "Need query `question_id`");
 
     const foundQuestion = await Question.findByPk(question_id);
 
@@ -106,13 +106,15 @@ exports.updateQuestion = async (req, res) => {
       return res.status(400).json({ status: 'Validation Failed', message: error.details[0].message })
 
     const foundQuestion = await Question.findByPk(question_id, {include: Quiz});
+    if (!foundQuestion)
+      return handleClientError(res, 404, "Question Not Found");
+
     if (req.user.role !== 1 && foundQuestion.Quiz.author_id !== req.user.id)
       return handleClientError(res, 400, "Not Authorized");
 
     if (dataReq.question_text) foundQuestion.question_text = dataReq.question_text;
     if (dataReq.answers) {
       dataReq.answers = JSON.stringify(dataReq.answers);
-      console.log(dataReq.answers, "<< ANSWERS");
       foundQuestion.answers = dataReq.answers;  
     } 
     await foundQuestion.save();
