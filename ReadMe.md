@@ -10,14 +10,22 @@ Basic express.js project with basic routes:
 ## How to Setup
 
 1. Create `uploads` folder
-2. Setup the database
+2. Setup `.env` file
+    ```
+    PORT=<PORT>
+    SALT=<SALT>
+    JWT_SECRET=<JWT_SECRET>
+    USERNAME_NODEMAILER=<EMAIL_THAT_IS_SET_SEND_EMAIL>
+    PASSWORD_NODEMAILER=<PASSWORD_EMAIL_FOR_SEND_EMAIL>
+    ```
 
-```
-npx sequelize-cli db:drop
-npx sequelize-cli db:create
-npx sequelize-cli db:migrate
-npx sequelize-cli db:seed:all
-```
+3. Setup the database
+    ```
+    npx sequelize-cli db:drop
+    npx sequelize-cli db:create
+    npx sequelize-cli db:migrate
+    npx sequelize-cli db:seed:all
+    ```
 
 ## How to Run
 ```
